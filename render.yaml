@@ -40,15 +40,10 @@ services:
     name: sentinel-frontend
     env: static
     rootDir: backup_sentinel/sentinel-watch
-    # plan: free <- Removed (Defaults to free for static sites)
-    buildCommand: export VITE_API_BASE_URL=https://${BACKEND_HOST}/api && npm install && npm run build
+    # Build command simplified to use .env file or Dashboard Env Vars
+    buildCommand: npm install && npm run build
     staticPublishPath: dist
-    envVars:
-      - key: BACKEND_HOST
-        fromService:
-          type: web
-          name: sentinel-backend
-          property: host
+    # Removing VITE_API_BASE_URL injection here to allow .env precedence if present
 
   # ----------------------------------------
   # Citizen Dashboard Frontend (React)
@@ -57,15 +52,10 @@ services:
     name: citizen-frontend
     env: static
     rootDir: citizen_dashboard/citizen
-    # plan: free <- Removed (Defaults to free for static sites)
-    buildCommand: export VITE_API_BASE_URL=https://${BACKEND_HOST}/api && npm install && npm run build
+    # Build command simplified to use .env file or Dashboard Env Vars
+    buildCommand: npm install && npm run build
     staticPublishPath: dist
-    envVars:
-      - key: BACKEND_HOST
-        fromService:
-          type: web
-          name: citizen-backend
-          property: host
+    # Removing VITE_API_BASE_URL injection here to allow .env precedence if present
 
   # ----------------------------------------
   # Landing Page (Static HTML)
@@ -74,7 +64,7 @@ services:
     name: landing-page
     env: static
     rootDir: frontpage
-    # plan: free <- Removed (Defaults to free for static sites)
+    # Keep sed replacement as there is no .env mechanism for static HTML
     buildCommand: sed -i "s|SERVICE_ADMIN_DASHBOARD_URL|https://${ADMIN_HOST}|g" index.html && sed -i "s|SERVICE_CITIZEN_DASHBOARD_URL|https://${CITIZEN_HOST}|g" index.html
     staticPublishPath: .
     envVars:
