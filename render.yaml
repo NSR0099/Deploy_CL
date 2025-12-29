@@ -40,8 +40,7 @@ services:
     name: sentinel-frontend
     env: static
     rootDir: backup_sentinel/sentinel-watch
-    plan: free
-    # Fix: Inject host into VITE var during build
+    # plan: free <- Removed (Defaults to free for static sites)
     buildCommand: export VITE_API_BASE_URL=https://${BACKEND_HOST}/api && npm install && npm run build
     staticPublishPath: dist
     envVars:
@@ -58,8 +57,7 @@ services:
     name: citizen-frontend
     env: static
     rootDir: citizen_dashboard/citizen
-    plan: free
-    # Fix: Inject host into VITE var during build
+    # plan: free <- Removed (Defaults to free for static sites)
     buildCommand: export VITE_API_BASE_URL=https://${BACKEND_HOST}/api && npm install && npm run build
     staticPublishPath: dist
     envVars:
@@ -76,8 +74,7 @@ services:
     name: landing-page
     env: static
     rootDir: frontpage
-    plan: free
-    # Fix: Use 'host' property and prepend https://
+    # plan: free <- Removed (Defaults to free for static sites)
     buildCommand: sed -i "s|SERVICE_ADMIN_DASHBOARD_URL|https://${ADMIN_HOST}|g" index.html && sed -i "s|SERVICE_CITIZEN_DASHBOARD_URL|https://${CITIZEN_HOST}|g" index.html
     staticPublishPath: .
     envVars:
