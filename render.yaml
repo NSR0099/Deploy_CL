@@ -41,15 +41,15 @@ services:
     env: static
     rootDir: backup_sentinel/sentinel-watch
     plan: free
-    buildCommand: npm install && npm run build
+    # Fix: Inject host into VITE var during build
+    buildCommand: export VITE_API_BASE_URL=https://${BACKEND_HOST}/api && npm install && npm run build
     staticPublishPath: dist
     envVars:
-      - key: VITE_API_BASE_URL
+      - key: BACKEND_HOST
         fromService:
           type: web
           name: sentinel-backend
-          property: url
-          envVarKey: VITE_API_BASE_URL
+          property: host
 
   # ----------------------------------------
   # Citizen Dashboard Frontend (React)
@@ -59,15 +59,15 @@ services:
     env: static
     rootDir: citizen_dashboard/citizen
     plan: free
-    buildCommand: npm install && npm run build
+    # Fix: Inject host into VITE var during build
+    buildCommand: export VITE_API_BASE_URL=https://${BACKEND_HOST}/api && npm install && npm run build
     staticPublishPath: dist
     envVars:
-      - key: VITE_API_BASE_URL
+      - key: BACKEND_HOST
         fromService:
           type: web
           name: citizen-backend
-          property: url
-          envVarKey: VITE_API_BASE_URL
+          property: host
 
   # ----------------------------------------
   # Landing Page (Static HTML)
@@ -77,17 +77,17 @@ services:
     env: static
     rootDir: frontpage
     plan: free
-    # Auto-replace placeholders with actual URLs during build
-    buildCommand: sed -i "s|SERVICE_ADMIN_DASHBOARD_URL|${ADMIN_URL}|g" index.html && sed -i "s|SERVICE_CITIZEN_DASHBOARD_URL|${CITIZEN_URL}|g" index.html
+    # Fix: Use 'host' property and prepend https://
+    buildCommand: sed -i "s|SERVICE_ADMIN_DASHBOARD_URL|https://${ADMIN_HOST}|g" index.html && sed -i "s|SERVICE_CITIZEN_DASHBOARD_URL|https://${CITIZEN_HOST}|g" index.html
     staticPublishPath: .
     envVars:
-      - key: ADMIN_URL
+      - key: ADMIN_HOST
         fromService:
             type: web
             name: sentinel-frontend
-            property: url
-      - key: CITIZEN_URL
+            property: host
+      - key: CITIZEN_HOST
         fromService:
             type: web
             name: citizen-frontend
-            property: url
+            property: host
