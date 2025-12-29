@@ -31,6 +31,64 @@ services:
       - key: MONGODB_URI
         sync: false # User must provide this in Render Dashboard
       - key: JWT_SECRET
-        generateValue: true # Render will generate a securely random secret
+        generateValue: true
 
-# Note: The 'deploy' folder should be the root of your Git repository for this configuration to work.
+  # ----------------------------------------
+  # Admin Dashboard Frontend (React)
+  # ----------------------------------------
+  - type: web
+    name: sentinel-frontend
+    env: static
+    rootDir: backup_sentinel/sentinel-watch
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: sentinel-backend
+          property: url
+          envVarKey: VITE_API_BASE_URL
+
+  # ----------------------------------------
+  # Citizen Dashboard Frontend (React)
+  # ----------------------------------------
+  - type: web
+    name: citizen-frontend
+    env: static
+    rootDir: citizen_dashboard/citizen
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: citizen-backend
+          property: url
+          envVarKey: VITE_API_BASE_URL
+
+  # ----------------------------------------
+  # Landing Page (Static HTML)
+  # ----------------------------------------
+  - type: web
+    name: landing-page
+    env: static
+    rootDir: frontpage
+    plan: free
+    staticPublishPath: . 
+    # For simple HTML/CSS/JS without build steps, publish path is usually root relative to rootDir? 
+    # Render 'static' env usually asks for a build command. If none, 'echo "no build"' or just leaving it empty might work but publish directory matters.
+    # If it's just index.html, rootDir 'frontpage' and publish '.' works.
+    envVars:
+      - key: ADMIN_URL
+        fromService:
+            type: web
+            name: sentinel-frontend
+            property: url
+      - key: CITIZEN_URL
+        fromService:
+            type: web
+            name: citizen-frontend
+            property: url
