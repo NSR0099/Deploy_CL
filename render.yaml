@@ -1,0 +1,36 @@
+services:
+  # ----------------------------------------
+  # Sentinel Admin Backend (Node/Express)
+  # ----------------------------------------
+  - type: web
+    name: sentinel-backend
+    env: node
+    rootDir: backup_sentinel/sentinel-watch/backend
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: MONGODB_URI
+        sync: false # User must provide this in Render Dashboard
+
+  # ----------------------------------------
+  # Citizen Dashboard Backend (Node/Express)
+  # ----------------------------------------
+  - type: web
+    name: citizen-backend
+    env: node
+    rootDir: citizen_dashboard/citizen/backend
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false # User must provide this in Render Dashboard
+      - key: JWT_SECRET
+        generateValue: true # Render will generate a securely random secret
+
+# Note: The 'deploy' folder should be the root of your Git repository for this configuration to work.
