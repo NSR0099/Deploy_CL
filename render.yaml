@@ -77,10 +77,9 @@ services:
     env: static
     rootDir: frontpage
     plan: free
-    staticPublishPath: . 
-    # For simple HTML/CSS/JS without build steps, publish path is usually root relative to rootDir? 
-    # Render 'static' env usually asks for a build command. If none, 'echo "no build"' or just leaving it empty might work but publish directory matters.
-    # If it's just index.html, rootDir 'frontpage' and publish '.' works.
+    # Auto-replace placeholders with actual URLs during build
+    buildCommand: sed -i "s|SERVICE_ADMIN_DASHBOARD_URL|${ADMIN_URL}|g" index.html && sed -i "s|SERVICE_CITIZEN_DASHBOARD_URL|${CITIZEN_URL}|g" index.html
+    staticPublishPath: .
     envVars:
       - key: ADMIN_URL
         fromService:
